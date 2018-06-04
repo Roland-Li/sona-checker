@@ -8,6 +8,11 @@ ID_FILE="ids.txt"
 COOKIE_FILE="cookies.txt"
 EMAILS_FILE="email_list.txt"
 
+#Your page to check; modify to your sona instance
+#Can technically only use the one page but...
+DEFAULT_PAGE="https://wlu-ls.sona-systems.com/default.aspx"
+STUDIES_PAGE="https://wlu-ls.sona-systems.com/all_exp_participant.aspx"
+
 login() {
     #Default session id
     SESSIONID='251l33svkwftvv34ytpsl5p1'
@@ -21,7 +26,7 @@ login() {
     COOKIE="Cookie: language_pref=EN; ASP.NET_SessionId=$SESSIONID; cookie_ck=Y;"
 
     #Login request; returns required cookie into cookies.txt
-    curl --cookie-jar $COOKIE_FILE -s "https://wlu-ls.sona-systems.com/default.aspx" -H "$COOKIE" -d "$DATA" >> /dev/null
+    curl --cookie-jar $COOKIE_FILE -s "$DEFUALT_PAGE"  -H "$COOKIE" -d "$DATA" >> /dev/null
 
     # Gross way to grab cookie in a hard-coded method
     WEBHOME=$(sed '5q;d' $COOKIE_FILE | awk '{print $7}')
@@ -32,7 +37,7 @@ login() {
 COOKIE="$(login)"
 
 #Check the studies page
-curl "https://wlu-ls.sona-systems.com/all_exp_participant.aspx" -H "$COOKIE" -s > studies.html
+curl "$STUDIES_PAGE" -H "$COOKIE" -s > studies.html
 
 grep 'experiment_id=' studies.html | while read -r id ; do
     #Skip over duplicate div
@@ -55,7 +60,7 @@ grep 'experiment_id=' studies.html | while read -r id ; do
             echo "Sending mail: $address"
 
             SUBJECT="New Study Available on Sona | ID: $ID_NUM"  
-            TEXT="https://wlu-ls.sona-systems.com/default.aspx"  
+            TEXT="$STUDIES_PAGE"  
 
             # SENDER='SonaCheckerBot <noreply@sonabot.com>'
             echo -e "$TEXT" | mail  -s "$SUBJECT" "$address"   
@@ -63,7 +68,7 @@ grep 'experiment_id=' studies.html | while read -r id ; do
     fi
 done
 
-#Remove garbage
+#Remove temp html page
 rm studies.html
 
 
