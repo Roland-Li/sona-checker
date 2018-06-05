@@ -31,14 +31,14 @@ login() {
 
     #Grab credentials
     USERNAME=$(sed '1q;d' $CREDENTIALS_FILE)
-    PASSWORD=$(sed '2q;d' $CREDENTIALS_FILE)
+    PASSWORD=$(sed '2q;d' $CREDENTIALS_FILE) #Need to be stored with html url encoding
     
     #Login request; returns required cookie into cookies.txt
-    DATA="__LASTFOCUS=&__VIEWSTATE=%2FwEPDwUJNjM2MDQ1NTgyZGSHi2XgX%2FUE1%2F9%2BPCRY6NJ4nXYVWCVXfAYIFvqAveLC3A%3D%3D&__VIEWSTATEGENERATOR=CA0B0334&__EVENTTARGET=&__EVENTARGUMENT=&__EVENTVALIDATION=%2FwEdAAVJNJYm0f4uWg7cS6joTPw5UIlPJ3shF6ZfHx5cHAdswX1Gsa4Qp9IFMNZyT1m%2FORlOGPoKvJSxXl507%2BPWyULdk0IaRa81gSyF%2Ft2E7n3iJWU%2BD9YgP8jtn3s5kkIRi4NZc9SrPpif7I8VynwW%2BcCE&ctl00%24ContentPlaceHolder1%24return_experiment_id=&ctl00%24ContentPlaceHolder1%24userid=${USERNAME}&ctl00%24ContentPlaceHolder1%24default_auth_button=Log+In"
+    DATA="__LASTFOCUS=&__VIEWSTATE=%2FwEPDwUJNjM2MDQ1NTgyZGSHi2XgX%2FUE1%2F9%2BPCRY6NJ4nXYVWCVXfAYIFvqAveLC3A%3D%3D&__VIEWSTATEGENERATOR=CA0B0334&__EVENTTARGET=&__EVENTARGUMENT=&__EVENTVALIDATION=%2FwEdAAVJNJYm0f4uWg7cS6joTPw5UIlPJ3shF6ZfHx5cHAdswX1Gsa4Qp9IFMNZyT1m%2FORlOGPoKvJSxXl507%2BPWyULdk0IaRa81gSyF%2Ft2E7n3iJWU%2BD9YgP8jtn3s5kkIRi4NZc9SrPpif7I8VynwW%2BcCE&ctl00%24ContentPlaceHolder1%24return_experiment_id=&ctl00%24ContentPlaceHolder1%24userid=${USERNAME}&ctl00%24ContentPlaceHolder1%24pw=${PASSWORD}&ctl00%24ContentPlaceHolder1%24default_auth_button=Log+In"
     COOKIE="Cookie: language_pref=EN; ASP.NET_SessionId=$SESSIONID; cookie_ck=Y;"
 
     #Login request; returns required cookie into cookies.txt
-    curl --cookie-jar $COOKIE_FILE -s "https://wlu-ls.sona-systems.com/default.aspx" -H "$COOKIE" -d "$DATA" --data-urlencode "ctl00%24ContentPlaceHolder1%24pw=$PASSWORD" > /dev/null
+    curl --cookie-jar $COOKIE_FILE -s "https://wlu-ls.sona-systems.com/default.aspx" -H "$COOKIE" -d "$DATA" > /dev/null
 
     # Gross way to grab cookie in a hard-coded method
     WEBHOME=$(sed '5q;d' "$COOKIE_FILE" | awk '{print $7}')
