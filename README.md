@@ -5,5 +5,5 @@ How to use:
 Open up sona-checker.sh; comments should tell you which files you'll need to define.
 <br> 
 Requires credentials to login to SONA, email address for alerts.
-<br
+<br>
 To set up continuous checking, use crontab or service.
