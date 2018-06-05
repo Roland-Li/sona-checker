@@ -10,3 +10,6 @@ This version pushes the requirement for HTML URL encoding the password onto the 
 It must be stored pre-encoded in the credentials file
 <br>
 To set up continuous checking, use crontab or service.
+<br>
+e.g. Crontab: /15 8-20 * * * cd /u3/r249li/scripts/sona_checker && ./sona-checker.sh;
+
