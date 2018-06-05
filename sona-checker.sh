@@ -9,6 +9,9 @@
 #Set a value here for debugs. Empty = no messages
 DEBUG=""
 
+#Set a value here for random interval sleeps, in case there's a bot baner somewhere
+SLEEPER="ON"
+
 #These files must be user defined
 #1: Emails file; 1 email address per line. Sends emails to these.
 #2: Credentials file; line 1 is username, line 2 is password
@@ -70,6 +73,10 @@ if [ ! -z "$CHECK1" ] || [ ! -z "$CHECK2" ]; then
     exit
 fi
 
+
+#Flag to send out emails. If still empty, don't do anything
+EMAIL_IDS=""
+
 grep 'experiment_id=' studies.html | while read -r id ; do
     #Skip over duplicate div
     if echo "$id" | grep -q "btn"; then continue; fi
@@ -88,22 +95,27 @@ grep 'experiment_id=' studies.html | while read -r id ; do
 
         if [ ! -z "$DEBUG" ]; then echo "Sending out alert emails for $ID_NUM..."; fi
 
-        #Send out email
-        cat "email_list.txt" | while read -r address; do
-            if [ -z "$address" ]; then continue; fi
-
-            SUBJECT="New Study Available on Sona | ID: $ID_NUM"  
-            TEXT="$STUDIES_PAGE"  
-
-            # SENDER='SonaCheckerBot <noreply@sonabot.com>'
-            echo -e "$TEXT" | mail  -s "$SUBJECT" "$address"   
-        done
+        EMAIL_IDS="$EMAIL_IDS $ID_NUM"
     fi
 done
 
+if [ ! -z "$EMAIL_IDS" ]; then
+    cat "email_list.txt" | while read -r address; do
+        if [ -z "$address" ]; then continue; fi
+
+        SUBJECT="New Study(s) Available on Sona | ID(s):$EMAIL_IDS"  
+        TEXT="$STUDIES_PAGE"  
+
+        # SENDER='SonaCheckerBot <noreply@sonabot.com>'
+        echo -e "$TEXT" | mail  -s "$SUBJECT" "$address"   
+    done
+fi
+
 #To avoid potential of getting banned, have random sleep to avoid bot flagging
-RANDOM=$(shuf -i 60-6000 -n 1)
-sleep ${RANDOM}s
+if [ ! -z "$SLEEPER"]; then
+    RANDOM=$(shuf -i 60-6000 -n 1)
+    sleep ${RANDOM}s
+fi
 
 #Remove temp html page
 # rm studies.html
