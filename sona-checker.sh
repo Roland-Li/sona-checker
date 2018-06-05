@@ -101,6 +101,10 @@ grep 'experiment_id=' studies.html | while read -r id ; do
     fi
 done
 
+#To avoid potential of getting banned, have random sleep to avoid bot flagging
+RANDOM=$(shuf -i 60-6000 -n 1)
+sleep ${RANDOM}s
+
 #Remove temp html page
 # rm studies.html
 
