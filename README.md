@@ -1,6 +1,10 @@
 # sona-checker
 Checks SONA instance for new studies via ID check. Tracks encountered IDs and sends email alerts for new ones.
-
+<br>
+<br>
+Don't want to set it up yourself? Message me your mail address and I'll add it to my mailing list (recommend student email).
+<br>
+<br>
 How to use:
 Open up sona-checker.sh; comments should tell you which files you'll need to define.
 <br> 
