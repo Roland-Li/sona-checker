@@ -9,7 +9,8 @@
 #Set a value here for debugs. Empty = no messages
 DEBUG=""
 
-#Set a value here for random interval sleeps, in case there's a bot baner somewhere
+#Set a value here to enable random interval sleeps, 
+#to make it less obvious we're botting, or w.e.
 SLEEPER="ON"
 
 #These files must be user defined
@@ -48,6 +49,12 @@ login() {
     echo "Cookie: language_pref=EN; ASP.NET_SessionId=$SESSIONID; cookie_ck=Y; WEBHOME=$WEBHOME"
 }
 
+#To avoid potential of getting banned, have random sleep to avoid bot flagging
+if [ ! -z "$SLEEPER" ]; then
+    RAND=$(shuf -i 1-600 -n 1)
+    sleep "${RAND}s"
+fi
+
 #Login and save the cookie
 COOKIE="$(login)"
 
@@ -65,7 +72,7 @@ if [ ! -z "$CHECK1" ] || [ ! -z "$CHECK2" ]; then
         if [ -z "$address" ]; then continue; fi
 
         SUBJECT="Failed to check studies page. Cookie error?"  
-        TEXT="$(echo cookies.txt)"  
+        TEXT="$(cat $COOKIE_FILE)"  
 
         echo -e "$TEXT" | mail  -s "$SUBJECT" "$address"   
     done
@@ -73,9 +80,9 @@ if [ ! -z "$CHECK1" ] || [ ! -z "$CHECK2" ]; then
     exit
 fi
 
-
-#Flag to send out emails. If still empty, don't do anything
-EMAIL_IDS=""
+#Use a file as a flag for if an email is sent. 
+#File instead of a variable because of context issues
+printf "" > email_ids.txt 
 
 grep 'experiment_id=' studies.html | while read -r id ; do
     #Skip over duplicate div
@@ -95,10 +102,11 @@ grep 'experiment_id=' studies.html | while read -r id ; do
 
         if [ ! -z "$DEBUG" ]; then echo "Sending out alert emails for $ID_NUM..."; fi
 
-        EMAIL_IDS="$EMAIL_IDS $ID_NUM"
+        printf "$ID_NUM " >> email_ids.txt 
     fi
 done
 
+EMAIL_IDS=$(cat email_ids.txt)
 if [ ! -z "$EMAIL_IDS" ]; then
     cat "email_list.txt" | while read -r address; do
         if [ -z "$address" ]; then continue; fi
@@ -111,13 +119,8 @@ if [ ! -z "$EMAIL_IDS" ]; then
     done
 fi
 
-#To avoid potential of getting banned, have random sleep to avoid bot flagging
-if [ ! -z "$SLEEPER"]; then
-    RANDOM=$(shuf -i 60-6000 -n 1)
-    sleep ${RANDOM}s
-fi
-
 #Remove temp html page
 # rm studies.html
+rm email_ids.txt
 
 
