@@ -88,6 +88,12 @@ grep 'experiment_id=' studies.html | while read -r id ; do
 
         if [ ! -z "$DEBUG" ]; then echo "Sending out alert emails for $ID_NUM..."; fi
 
+        #Send out discord notification
+        cat "discord_webhooks.txt" | while read -r address; do
+            if [ -z "$address" ]; then continue; fi
+            curl -X POST -H 'Content-Type: application/json' -d '{"content":"RolandBot found new Sona study: '${ID_NUM}'"}' $address
+        done
+
         #Send out email
         cat "email_list.txt" | while read -r address; do
             if [ -z "$address" ]; then continue; fi
