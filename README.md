@@ -17,3 +17,5 @@ To set up continuous checking, use crontab or service.
 <br>
 e.g. Crontab: /15 8-20 * * * cd /u3/r249li/scripts/sona_checker && ./sona-checker.sh;
 
+TODO: Add basic instructions on setup for discord 
+      Merge master with updates from old-bash (only difference should be the mail settings)
